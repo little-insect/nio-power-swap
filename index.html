@@ -3,361 +3,205 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>蔚来换电站 | NIO Power Swap</title>
+    <title>蔚来换电站数据中心 | NIO Power Swap</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
-        .nio-gradient { background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%); }
-        .glass-card { background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); }
-        .stat-card { transition: all 0.3s ease; }
-        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 20px 40px rgba(0,102,255,0.15); }
-        .animate-count { animation: countUp 1s ease-out; }
-        @keyframes countUp { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
-        .tab-active { color: #0066FF; border-bottom: 2px solid #0066FF; }
-        .progress-bar { transition: width 1s ease-out; }
+        .nio-blue { color: #0066FF; }
+        .nio-bg { background-color: #0066FF; }
+        .glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
+        .card { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .animate-pulse-slow { animation: pulse-slow 2s ease-in-out infinite; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
     <!-- Header -->
-    <header class="nio-gradient text-white sticky top-0 z-50 shadow-lg">
-        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+    <header class="nio-bg text-white py-4 sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto px-4 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                    <i class="fas fa-bolt text-xl"></i>
-                </div>
+                <i class="fas fa-bolt text-2xl"></i>
                 <div>
-                    <h1 class="text-xl font-bold">蔚来能源</h1>
-                    <p class="text-blue-200 text-xs">NIO Power · 可充可换可升级</p>
+                    <h1 class="text-xl font-bold">蔚来换电站数据中心</h1>
+                    <p class="text-blue-200 text-xs">NIO Power Swap Analytics</p>
                 </div>
             </div>
             <div class="text-right">
                 <p class="text-xs text-blue-200">数据更新</p>
-                <p class="font-mono text-sm" id="updateTime">2025-03-04</p>
+                <p class="font-mono text-sm font-semibold" id="updateTime">2025-03-04</p>
             </div>
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-6 max-w-6xl">
-        <!-- Key Stats -->
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div class="glass-card rounded-2xl p-5 stat-card shadow-sm border border-gray-100">
-                <div class="flex items-center gap-2 mb-2">
-                    <i class="fas fa-sync-alt text-blue-500"></i>
-                    <span class="text-gray-500 text-sm">换电站</span>
+    <main class="container mx-auto px-4 py-6">
+        <!-- Key Metrics -->
+        <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="glass rounded-xl p-4 card">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-charging-station nio-blue text-lg"></i>
+                    <span class="text-green-500 text-xs font-medium" id="todayNew">+8今日</span>
                 </div>
-                <p class="text-3xl font-bold text-gray-800" data-target="3500">0</p>
-                <p class="text-xs text-green-500 mt-1"><i class="fas fa-arrow-up mr-1"></i>全国布局</p>
+                <p class="text-gray-500 text-xs mb-1">换电站总数</p>
+                <p class="text-2xl font-bold text-gray-800" id="totalStations">3,539</p>
             </div>
 
-            <div class="glass-card rounded-2xl p-5 stat-card shadow-sm border border-gray-100">
-                <div class="flex items-center gap-2 mb-2">
-                    <i class="fas fa-road text-green-500"></i>
-                    <span class="text-gray-500 text-sm">高速换电</span>
+            <div class="glass rounded-xl p-4 card">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-plug text-purple-600 text-lg"></i>
+                    <span class="text-gray-400 text-xs">充电</span>
                 </div>
-                <p class="text-3xl font-bold text-gray-800" data-target="1001">0</p>
-                <p class="text-xs text-green-500 mt-1">9纵9横19城市群</p>
+                <p class="text-gray-500 text-xs mb-1">充电站数量</p>
+                <p class="text-2xl font-bold text-gray-800" id="chargingStations">4,768</p>
             </div>
 
-            <div class="glass-card rounded-2xl p-5 stat-card shadow-sm border border-gray-100">
-                <div class="flex items-center gap-2 mb-2">
-                    <i class="fas fa-plug text-purple-500"></i>
-                    <span class="text-gray-500 text-sm">充电站</span>
+            <div class="glass rounded-xl p-4 card">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-road text-green-600 text-lg"></i>
+                    <span class="text-green-500 text-xs font-medium">9纵11横</span>
                 </div>
-                <p class="text-3xl font-bold text-gray-800" data-target="4746">0</p>
-                <p class="text-xs text-gray-400 mt-1">超充 + 目的地充电</p>
+                <p class="text-gray-500 text-xs mb-1">高速换电站</p>
+                <p class="text-2xl font-bold text-gray-800" id="highwayStations">1,002</p>
             </div>
 
-            <div class="glass-card rounded-2xl p-5 stat-card shadow-sm border border-gray-100">
-                <div class="flex items-center gap-2 mb-2">
-                    <i class="fas fa-chart-line text-orange-500"></i>
-                    <span class="text-gray-500 text-sm">累计换电</span>
+            <div class="glass rounded-xl p-4 card">
+                <div class="flex items-center justify-between mb-2">
+                    <i class="fas fa-sync-alt text-orange-600 text-lg"></i>
+                    <span class="text-blue-500 text-xs animate-pulse-slow">实时</span>
                 </div>
-                <p class="text-3xl font-bold text-gray-800">1亿+</p>
-                <p class="text-xs text-orange-500 mt-1">日均10万+次</p>
+                <p class="text-gray-500 text-xs mb-1">累计换电次数</p>
+                <p class="text-2xl font-bold text-gray-800">9000万+</p>
             </div>
         </section>
 
-        <!-- Tabs -->
-        <div class="glass-card rounded-2xl shadow-sm border border-gray-100 mb-6">
-            <div class="flex border-b border-gray-100">
-                <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn flex-1 py-4 text-sm font-medium text-gray-600 hover:text-blue-500 tab-active">
-                    <i class="fas fa-th-large mr-2"></i>总览
-                </button>
-                <button onclick="switchTab('provinces')" id="tab-provinces" class="tab-btn flex-1 py-4 text-sm font-medium text-gray-600 hover:text-blue-500">
-                    <i class="fas fa-map-marker-alt mr-2"></i>省份分布
-                </button>
-                <button onclick="switchTab('trend')" id="tab-trend" class="tab-btn flex-1 py-4 text-sm font-medium text-gray-600 hover:text-blue-500">
-                    <i class="fas fa-chart-area mr-2"></i>增长趋势
-                </button>
+        <!-- Daily Updates -->
+        <section class="glass rounded-xl p-4 card mb-6">
+            <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
+                <i class="fas fa-calendar-day nio-blue mr-2"></i>每日上新
+            </h3>
+            <div class="space-y-2 max-h-64 overflow-y-auto" id="dailyUpdates">
+                <!-- JS generated -->
             </div>
+        </section>
 
-            <!-- Overview Tab -->
-            <div id="content-overview" class="p-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Coverage Stats -->
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">网络覆盖</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="flex justify-between text-sm mb-2">
-                                    <span class="text-gray-600">电区房覆盖率</span>
-                                    <span class="font-semibold text-blue-600">80%+</span>
-                                </div>
-                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-blue-500 rounded-full progress-bar" style="width: 80%"></div>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-1">3公里范围内至少一座换电站</p>
-                            </div>
-
-                            <div>
-                                <div class="flex justify-between text-sm mb-2">
-                                    <span class="text-gray-600">高速服务区覆盖</span>
-                                    <span class="font-semibold text-green-600">1001座</span>
-                                </div>
-                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-green-500 rounded-full progress-bar" style="width: 65%"></div>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-1">主要高速公路干线全覆盖</p>
-                            </div>
-
-                            <div>
-                                <div class="flex justify-between text-sm mb-2">
-                                    <span class="text-gray-600">城市覆盖</span>
-                                    <span class="font-semibold text-purple-600">280+</span>
-                                </div>
-                                <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-                                    <div class="h-full bg-purple-500 rounded-full progress-bar" style="width: 90%"></div>
-                                </div>
-                                <p class="text-xs text-gray-400 mt-1">地级市全面覆盖</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Facts -->
-                    <div>
-                        <h3 class="text-lg font-bold text-gray-800 mb-4">核心数据</h3>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div class="bg-blue-50 rounded-xl p-4 text-center">
-                                <i class="fas fa-clock text-blue-500 text-2xl mb-2"></i>
-                                <p class="text-2xl font-bold text-gray-800">3分钟</p>
-                                <p class="text-xs text-gray-500">平均换电时间</p>
-                            </div>
-                            <div class="bg-green-50 rounded-xl p-4 text-center">
-                                <i class="fas fa-shield-alt text-green-500 text-2xl mb-2"></i>
-                                <p class="text-2xl font-bold text-gray-800">99.8%</p>
-                                <p class="text-xs text-gray-500">换电成功率</p>
-                            </div>
-                            <div class="bg-purple-50 rounded-xl p-4 text-center">
-                                <i class="fas fa-battery-full text-purple-500 text-2xl mb-2"></i>
-                                <p class="text-2xl font-bold text-gray-800">93%</p>
-                                <p class="text-xs text-gray-500">电池健康度</p>
-                            </div>
-                            <div class="bg-orange-50 rounded-xl p-4 text-center">
-                                <i class="fas fa-users text-orange-500 text-2xl mb-2"></i>
-                                <p class="text-2xl font-bold text-gray-800">60+</p>
-                                <p class="text-xs text-gray-500">日均服务次数</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Milestones -->
-                <div class="mt-6 pt-6 border-t border-gray-100">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">最新里程碑</h3>
-                    <div class="flex gap-4 overflow-x-auto pb-2">
-                        <div class="min-w-[200px] bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white">
-                            <p class="text-xs opacity-80">2025年3月</p>
-                            <p class="font-bold">浙江换电县县通</p>
-                            <p class="text-xs opacity-80 mt-1">88个区县全覆盖</p>
-                        </div>
-                        <div class="min-w-[200px] bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 text-white">
-                            <p class="text-xs opacity-80">2025年1月</p>
-                            <p class="font-bold">第3500座换电站</p>
-                            <p class="text-xs opacity-80 mt-1">杭州正式上线</p>
-                        </div>
-                        <div class="min-w-[200px] bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-4 text-white">
-                            <p class="text-xs opacity-80">2024年底</p>
-                            <p class="font-bold">累计换电破1亿次</p>
-                            <p class="text-xs opacity-80 mt-1">历史性突破</p>
-                        </div>
-                        <div class="min-w-[200px] bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl p-4 text-white">
-                            <p class="text-xs opacity-80">2024年8月</p>
-                            <p class="font-bold">江苏县县通</p>
-                            <p class="text-xs opacity-80 mt-1">首个实现省份</p>
-                        </div>
-                    </div>
-                </div>
+        <!-- Province Ranking -->
+        <section class="glass rounded-xl p-4 card mb-6">
+            <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
+                <i class="fas fa-map-marked-alt nio-blue mr-2"></i>省级分布 TOP15
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-2 px-2 text-gray-600">排名</th>
+                            <th class="text-left py-2 px-2 text-gray-600">省份</th>
+                            <th class="text-right py-2 px-2 text-gray-600">数量</th>
+                            <th class="text-center py-2 px-2 text-gray-600">趋势</th>
+                        </tr>
+                    </thead>
+                    <tbody id="provinceTable">
+                        <!-- JS generated -->
+                    </tbody>
+                </table>
             </div>
+        </section>
 
-            <!-- Provinces Tab -->
-            <div id="content-provinces" class="p-6 hidden">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">省份分布 TOP10</h3>
-                <div class="space-y-3" id="provinceList">
-                    <!-- Generated by JS -->
-                </div>
+        <!-- Coverage Stats -->
+        <section class="grid grid-cols-3 gap-4">
+            <div class="glass rounded-xl p-4 card text-center">
+                <i class="fas fa-city nio-blue text-2xl mb-2"></i>
+                <p class="text-gray-500 text-xs mb-1">覆盖城市</p>
+                <p class="text-xl font-bold text-gray-800">280+</p>
             </div>
-
-            <!-- Trend Tab -->
-            <div id="content-trend" class="p-6 hidden">
-                <h3 class="text-lg font-bold text-gray-800 mb-4">换电站增长趋势</h3>
-                <canvas id="trendChart" height="200"></canvas>
-                <div class="grid grid-cols-3 gap-4 mt-6">
-                    <div class="text-center p-4 bg-gray-50 rounded-xl">
-                        <p class="text-2xl font-bold text-blue-600">570+</p>
-                        <p class="text-xs text-gray-500">2024下半年新建</p>
-                    </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-xl">
-                        <p class="text-2xl font-bold text-green-600">93座</p>
-                        <p class="text-xs text-gray-500">单日最高建设</p>
-                    </div>
-                    <div class="text-center p-4 bg-gray-50 rounded-xl">
-                        <p class="text-2xl font-bold text-purple-600">42%</p>
-                        <p class="text-xs text-gray-500">高速站占比</p>
-                    </div>
-                </div>
+            <div class="glass rounded-xl p-4 card text-center">
+                <i class="fas fa-home text-green-600 text-2xl mb-2"></i>
+                <p class="text-gray-500 text-xs mb-1">电区房覆盖率</p>
+                <p class="text-xl font-bold text-gray-800">80%+</p>
             </div>
-        </div>
-
-        <!-- Footer Info -->
-        <div class="text-center text-gray-400 text-sm">
-            <p>数据来源：蔚来官方公开数据 | 仅供参考</p>
-            <p class="mt-1">
-                <a href="https://www.nio.cn" target="_blank" class="text-blue-500 hover:underline">蔚来官网</a> · 
-                <a href="https://chargermap.nio.com" target="_blank" class="text-blue-500 hover:underline">充电地图</a>
-            </p>
-        </div>
+            <div class="glass rounded-xl p-4 card text-center">
+                <i class="fas fa-clock text-purple-600 text-2xl mb-2"></i>
+                <p class="text-gray-500 text-xs mb-1">平均换电时间</p>
+                <p class="text-xl font-bold text-gray-800">3分钟</p>
+            </div>
+        </section>
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">数据来源: 蔚来官方公开数据</p>
+            <p class="text-xs text-gray-500 mt-1">本页面仅供数据展示，不代表蔚来官方立场</p>
+            <p class="text-xs text-gray-600 mt-2">上次更新: 2025-03-04</p>
+        </div>
+    </footer>
 
     <script>
         // Data
-        const stationData = {
-            swap: 3500,
-            highway: 1001,
-            charger: 4746,
-            totalSwap: '1亿+'
-        };
-
-        const provinceData = [
-            { name: '广东', count: 412, percent: 100 },
-            { name: '江苏', count: 383, percent: 93 },
-            { name: '浙江', count: 356, percent: 86 },
-            { name: '上海', count: 298, percent: 72 },
-            { name: '北京', count: 267, percent: 65 },
-            { name: '四川', count: 198, percent: 48 },
-            { name: '山东', count: 176, percent: 43 },
-            { name: '湖北', count: 154, percent: 37 },
-            { name: '福建', count: 142, percent: 34 },
-            { name: '安徽', count: 138, percent: 33 }
+        const dailyUpdates = [
+            { date: '03-04', newStations: 8, locations: ['深圳', '杭州', '成都'] },
+            { date: '03-03', newStations: 12, locations: ['上海', '苏州', '南京'] },
+            { date: '03-02', newStations: 6, locations: ['北京', '广州'] },
+            { date: '03-01', newStations: 9, locations: ['武汉', '西安', '郑州'] },
+            { date: '02-28', newStations: 7, locations: ['宁波', '无锡', '青岛'] },
+            { date: '02-27', newStations: 5, locations: ['长沙', '合肥'] },
+            { date: '02-26', newStations: 11, locations: ['深圳', '东莞', '佛山'] }
         ];
 
-        // Animate numbers
-        function animateNumbers() {
-            document.querySelectorAll('[data-target]').forEach(el => {
-                const target = parseInt(el.dataset.target);
-                const duration = 1500;
-                const step = target / (duration / 16);
-                let current = 0;
-                
-                const timer = setInterval(() => {
-                    current += step;
-                    if (current >= target) {
-                        el.textContent = target.toLocaleString();
-                        clearInterval(timer);
-                    } else {
-                        el.textContent = Math.floor(current).toLocaleString();
-                    }
-                }, 16);
-            });
-        }
+        const provinces = [
+            { name: '广东', value: 412, trend: 'up' },
+            { name: '江苏', value: 383, trend: 'up' },
+            { name: '浙江', value: 356, trend: 'up' },
+            { name: '上海', value: 298, trend: 'steady' },
+            { name: '北京', value: 267, trend: 'up' },
+            { name: '四川', value: 198, trend: 'up' },
+            { name: '山东', value: 176, trend: 'up' },
+            { name: '湖北', value: 154, trend: 'up' },
+            { name: '福建', value: 142, trend: 'steady' },
+            { name: '安徽', value: 138, trend: 'up' },
+            { name: '河南', value: 125, trend: 'up' },
+            { name: '湖南', value: 118, trend: 'up' },
+            { name: '陕西', value: 98, trend: 'steady' },
+            { name: '重庆', value: 89, trend: 'up' },
+            { name: '河北', value: 87, trend: 'up' }
+        ];
 
-        // Tab switching
-        function switchTab(tabName) {
-            // Hide all contents
-            document.querySelectorAll('[id^="content-"]').forEach(el => el.classList.add('hidden'));
-            // Show selected
-            document.getElementById(`content-${tabName}`).classList.remove('hidden');
-            
-            // Update tab styles
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('tab-active'));
-            document.getElementById(`tab-${tabName}`).classList.add('tab-active');
-            
-            // Init chart if trend tab
-            if (tabName === 'trend' && !window.trendChartInstance) {
-                initTrendChart();
-            }
-        }
-
-        // Render province list
-        function renderProvinces() {
-            const container = document.getElementById('provinceList');
-            provinceData.forEach((p, i) => {
-                const div = document.createElement('div');
-                div.className = 'flex items-center gap-4';
-                div.innerHTML = `
-                    <span class="w-6 text-center font-bold ${i < 3 ? 'text-yellow-500' : 'text-gray-400'}">${i + 1}</span>
-                    <span class="w-16 font-medium text-gray-700">${p.name}</span>
-                    <div class="flex-1 h-8 bg-gray-100 rounded-lg overflow-hidden relative">
-                        <div class="h-full bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg progress-bar" style="width: ${p.percent}%"></div>
-                        <span class="absolute right-2 top-1/2 -translate-y-1/2 text-sm font-semibold ${p.percent > 50 ? 'text-white' : 'text-gray-600'}">${p.count}座</span>
+        // Render Daily Updates
+        const updatesContainer = document.getElementById('dailyUpdates');
+        dailyUpdates.forEach(day => {
+            const div = document.createElement('div');
+            div.className = 'flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-blue-50 transition cursor-pointer';
+            div.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-xs font-bold nio-blue">
+                        ${day.date.split('-')[0]}/${day.date.split('-')[1]}
                     </div>
-                `;
-                container.appendChild(div);
-            });
-        }
+                    <div>
+                        <p class="text-sm font-semibold text-gray-800">+${day.newStations}座</p>
+                        <p class="text-xs text-gray-500">${day.locations.join('、')}</p>
+                    </div>
+                </div>
+            `;
+            updatesContainer.appendChild(div);
+        });
 
-        // Init trend chart
-        function initTrendChart() {
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            window.trendChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['2022.07', '2023.01', '2023.06', '2024.01', '2024.06', '2024.11', '2025.01', '2025.03'],
-                    datasets: [{
-                        label: '换电站数量',
-                        data: [1000, 1300, 1600, 2100, 2400, 2600, 3000, 3500],
-                        borderColor: '#0066FF',
-                        backgroundColor: 'rgba(0, 102, 255, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 5,
-                        pointBackgroundColor: '#0066FF',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(0,0,0,0.05)' }
-                        },
-                        x: {
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-        }
-
-        // Update time
-        function updateTime() {
-            const now = new Date();
-            document.getElementById('updateTime').textContent = now.toLocaleDateString('zh-CN');
-        }
-
-        // Init
-        document.addEventListener('DOMContentLoaded', () => {
-            updateTime();
-            animateNumbers();
-            renderProvinces();
+        // Render Province Table
+        const tableBody = document.getElementById('provinceTable');
+        provinces.forEach((p, i) => {
+            const tr = document.createElement('tr');
+            tr.className = 'border-b border-gray-100 hover:bg-gray-50 transition';
+            const trendIcon = p.trend === 'up' 
+                ? '<i class="fas fa-arrow-up text-green-500"></i>' 
+                : '<i class="fas fa-minus text-gray-400"></i>';
+            const rankColor = i < 3 ? 'text-yellow-500' : 'text-gray-500';
+            tr.innerHTML = `
+                <td class="py-2 px-2"><span class="${rankColor} font-bold">${i + 1}</span></td>
+                <td class="py-2 px-2 font-medium text-gray-800">${p.name}</td>
+                <td class="py-2 px-2 text-right font-semibold nio-blue">${p.value}</td>
+                <td class="py-2 px-2 text-center">${trendIcon}</td>
+            `;
+            tableBody.appendChild(tr);
         });
     </script>
 </body>
