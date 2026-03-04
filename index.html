@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蔚来换电站数据中心 | NIO Power Swap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+        .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .card-shadow { box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .glass-effect { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
+        .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes countUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .count-up { animation: countUp 0.8s ease-out; }
+        .nio-blue { color: #0066FF; }
+        .nio-bg { background-color: #0066FF; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="nio-bg text-white py-6 sticky top-0 z-50 shadow-lg">
+        <div class="container mx-auto px-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fas fa-bolt text-3xl"></i>
+                <div>
+                    <h1 class="text-2xl font-bold">蔚来换电站数据中心</h1>
+                    <p class="text-blue-200 text-sm">NIO Power Swap Station Analytics</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <p class="text-sm text-blue-200">数据更新时间</p>
+                <p class="font-mono font-semibold" id="updateTime">2025-03-04</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Key Metrics Cards -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="glass-effect rounded-2xl p-6 card-shadow count-up">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-charging-station nio-blue text-xl"></i>
+                    </div>
+                    <span class="text-green-500 text-sm font-medium"><i class="fas fa-arrow-up mr-1"></i>+156</span>
+                </div>
+                <h3 class="text-gray-600 text-sm mb-1">换电站总数</h3>
+                <p class="text-3xl font-bold text-gray-800" id="totalStations">3,539</p>
+                <p class="text-xs text-gray-500 mt-2">覆盖82.6%用户需求</p>
+            </div>
+
+            <div class="glass-effect rounded-2xl p-6 card-shadow count-up" style="animation-delay: 0.1s">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-plug text-purple-600 text-xl"></i>
+                    </div>
+                    <span class="text-green-500 text-sm font-medium"><i class="fas fa-arrow-up mr-1"></i>+89</span>
+                </div>
+                <h3 class="text-gray-600 text-sm mb-1">充电站数量</h3>
+                <p class="text-3xl font-bold text-gray-800">4,768</p>
+                <p class="text-xs text-gray-500 mt-2">充换电一体布局</p>
+            </div>
+
+            <div class="glass-effect rounded-2xl p-6 card-shadow count-up" style="animation-delay: 0.2s">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-road text-green-600 text-xl"></i>
+                    </div>
+                    <span class="text-green-500 text-sm font-medium"><i class="fas fa-arrow-up mr-1"></i>+134</span>
+                </div>
+                <h3 class="text-gray-600 text-sm mb-1">高速换电站</h3>
+                <p class="text-3xl font-bold text-gray-800">1,002</p>
+                <p class="text-xs text-gray-500 mt-2">9纵11横16大城市群</p>
+            </div>
+
+            <div class="glass-effect rounded-2xl p-6 card-shadow count-up" style="animation-delay: 0.3s">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                        <i class="fas fa-sync-alt text-orange-600 text-xl"></i>
+                    </div>
+                    <span class="text-blue-500 text-sm font-medium animate-pulse">实时</span>
+                </div>
+                <h3 class="text-gray-600 text-sm mb-1">累计换电次数</h3>
+                <p class="text-3xl font-bold text-gray-800">9,000万+</p>
+                <p class="text-xs text-gray-500 mt-2">日均7.8万次换电</p>
+            </div>
+        </section>
+
+        <!-- Daily Updates & Charts Row -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Daily New Stations -->
+            <div class="lg:col-span-1 glass-effect rounded-2xl p-6 card-shadow">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-calendar-day nio-blue mr-2"></i>
+                    每日上新统计
+                </h3>
+                <div class="space-y-4" id="dailyUpdates">
+                    <!-- Generated by JS -->
+                </div>
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sm text-gray-600">本周新增</span>
+                        <span class="text-xl font-bold nio-blue">+47座</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Trend Chart -->
+            <div class="lg:col-span-2 glass-effect rounded-2xl p-6 card-shadow">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fas fa-chart-line nio-blue mr-2"></i>
+                    月度增长趋势
+                </h3>
+                <canvas id="trendChart" height="120"></canvas>
+            </div>
+        </section>
+
+        <!-- Provincial Distribution Map -->
+        <section class="glass-effect rounded-2xl p-6 card-shadow mb-8">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-map-marked-alt nio-blue mr-2"></i>
+                省级分布热力图
+            </h3>
+            <div id="mapChart" style="height: 500px;"></div>
+        </section>
+
+        <!-- Province Ranking Table -->
+        <section class="glass-effect rounded-2xl p-6 card-shadow mb-8">
+            <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-trophy nio-blue mr-2"></i>
+                省份排行榜 TOP15
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="border-b border-gray-200">
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600">排名</th>
+                            <th class="text-left py-3 px-4 text-sm font-semibold text-gray-600">省份</th>
+                            <th class="text-right py-3 px-4 text-sm font-semibold text-gray-600">换电站数</th>
+                            <th class="text-right py-3 px-4 text-sm font-semibold text-gray-600">占比</th>
+                            <th class="text-center py-3 px-4 text-sm font-semibold text-gray-600">趋势</th>
+                        </tr>
+                    </thead>
+                    <tbody id="provinceTable">
+                        <!-- Generated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Milestone Timeline -->
+        <section class="glass-effect rounded-2xl p-6 card-shadow mb-8">
+            <h3 class="text-lg font-bold text-gray-800 mb-6 flex items-center">
+                <i class="fas fa-history nio-blue mr-2"></i>
+                发展里程碑
+            </h3>
+            <div class="relative">
+                <div class="absolute left-4 top-0 bottom-0 w-0.5 bg-blue-200"></div>
+                <div class="space-y-6" id="milestoneTimeline">
+                    <!-- Generated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Network Coverage Stats -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="glass-effect rounded-2xl p-6 card-shadow text-center">
+                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-city nio-blue text-2xl"></i>
+                </div>
+                <h4 class="text-gray-600 text-sm mb-2">覆盖城市</h4>
+                <p class="text-3xl font-bold text-gray-800">280+</p>
+                <p class="text-xs text-gray-500 mt-2">地级市全覆盖</p>
+            </div>
+
+            <div class="glass-effect rounded-2xl p-6 card-shadow text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-home text-green-600 text-2xl"></i>
+                </div>
+                <h4 class="text-gray-600 text-sm mb-2">电区房覆盖率</h4>
+                <p class="text-3xl font-bold text-gray-800">80%+</p>
+                <p class="text-xs text-gray-500 mt-2">3公里内至少一站</p>
+            </div>
+
+            <div class="glass-effect rounded-2xl p-6 card-shadow text-center">
+                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-clock text-purple-600 text-2xl"></i>
+                </div>
+                <h4 class="text-gray-600 text-sm mb-2">平均换电时间</h4>
+                <p class="text-3xl font-bold text-gray-800">3分钟</p>
+                <p class="text-xs text-gray-500 mt-2">比加油更快</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-sm text-gray-400">数据来源: 蔚来官方公开数据</p>
+                    <p class="text-xs text-gray-500 mt-1">本页面仅供数据展示，不代表蔚来官方立场</p>
+                </div>
+                <div class="flex gap-4">
+                    <a href="https://www.nio.cn" target="_blank" class="text-gray-400 hover:text-white transition">
+                        <i class="fas fa-globe mr-1"></i>蔚来官网
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition">
+                        <i class="fas fa-code mr-1"></i>GitHub
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Data
+        const stationData = {
+            total: 3539,
+            charging: 4768,
+            highway: 1002,
+            totalStations: 8307,
+            swapCount: '9000万+',
+            dailyAvg: '7.8万'
+        };
+
+        const provinceData = [
+            { name: '广东', value: 412, trend: 'up' },
+            { name: '江苏', value: 383, trend: 'up' },
+            { name: '浙江', value: 356, trend: 'up' },
+            { name: '上海', value: 298, trend: 'steady' },
+            { name: '北京', value: 267, trend: 'up' },
+            { name: '四川', value: 198, trend: 'up' },
+            { name: '山东', value: 176, trend: 'up' },
+            { name: '湖北', value: 154, trend: 'up' },
+            { name: '福建', value: 142, trend: 'steady' },
+            { name: '安徽', value: 138, trend: 'up' },
+            { name: '河南', value: 125, trend: 'up' },
+            { name: '湖南', value: 118, trend: 'up' },
+            { name: '陕西', value: 98, trend: 'steady' },
+            { name: '重庆', value: 89, trend: 'up' },
+            { name: '河北', value: 87, trend: 'up' }
+        ];
+
+        const dailyUpdates = [
+            { date: '03-04', newStations: 8, locations: ['深圳', '杭州', '成都'] },
+            { date: '03-03', newStations: 12, locations: ['上海', '苏州', '南京'] },
+            { date: '03-02', newStations: 6, locations: ['北京', '广州'] },
+            { date: '03-01', newStations: 9, locations: ['武汉', '西安', '郑州'] },
+            { date: '02-28', newStations: 7, locations: ['宁波', '无锡', '青岛'] },
+            { date: '02-27', newStations: 5, locations: ['长沙', '合肥'] }
+        ];
+
+        const milestones = [
+            { date: '2025-10', title: '累计换电突破9000万次', desc: '距离1亿次里程碑仅一步之遥' },
+            { date: '2025-10', title: '高速换电站达1002座', desc: '建成9纵11横16大城市群高速换电网络' },
+            { date: '2025-01', title: '换电站突破3000座', desc: '达成重要里程碑，覆盖更广' },
+            { date: '2024-11', title: '换电站达2600座', desc: '用户累计换电超5600万次' },
+            { date: '2024-08', title: '江苏实现换电县县通', desc: '全国首个换电县县通省份' },
+            { date: '2022-07', title: '第1000座换电站上线', desc: '于拉萨正式上线，意义重大' }
+        ];
+
+        // Initialize Daily Updates
+        function initDailyUpdates() {
+            const container = document.getElementById('dailyUpdates');
+            dailyUpdates.forEach((day, index) => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition cursor-pointer';
+                div.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-sm font-bold nio-blue">
+                            ${day.date.split('-')[1]}/${day.date.split('-')[2]}
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">+${day.newStations}座</p>
+                            <p class="text-xs text-gray-500">${day.locations.join('、')}</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400"></i>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Initialize Trend Chart
+        function initTrendChart() {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['2022-07', '2023-01', '2023-06', '2024-01', '2024-06', '2024-11', '2025-01', '2025-03'],
+                    datasets: [{
+                        label: '换电站数量',
+                        data: [1000, 1300, 1600, 2100, 2400, 2600, 3000, 3539],
+                        borderColor: '#0066FF',
+                        backgroundColor: 'rgba(0, 102, 255, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#0066FF'
+                    }, {
+                        label: '高速换电站',
+                        data: [200, 300, 450, 600, 750, 868, 950, 1002],
+                        borderColor: '#10B981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointBackgroundColor: '#10B981'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            align: 'end'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Initialize Map Chart
+        function initMapChart() {
+            const chartDom = document.getElementById('mapChart');
+            const myChart = echarts.init(chartDom);
+
+            // Simplified China map using coordinate data
+            const scatterData = provinceData.map((p, i) => ({
+                name: p.name,
+                value: [
+                    // Approximate coordinates for provinces
+                    [113.3, 23.1], [118.8, 32.1], [120.2, 30.3], [121.5, 31.2],
+                    [116.4, 39.9], [104.1, 30.7], [117.0, 36.7], [114.3, 30.6],
+                    [119.3, 26.1], [117.3, 31.9], [113.6, 34.8], [112.9, 28.2],
+                    [108.9, 34.3], [106.5, 29.6], [114.5, 38.0]
+                ][i].concat(p.value)
+            }));
+
+            const option = {
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        return params.name + '<br/>换电站: ' + params.value[2] + '座';
+                    }
+                },
+                geo: {
+                    map: 'china',
+                    roam: true,
+                    zoom: 1.2,
+                    itemStyle: {
+                        areaColor: '#f3f4f6',
+                        borderColor: '#9ca3af'
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            areaColor: '#dbeafe'
+                        }
+                    }
+                },
+                visualMap: {
+                    min: 0,
+                    max: 450,
+                    left: 'left',
+                    top: 'bottom',
+                    text: ['高', '低'],
+                    calculable: true,
+                    inRange: {
+                        color: ['#dbeafe', '#3b82f6', '#1d4ed8']
+                    }
+                },
+                series: [{
+                    name: '换电站分布',
+                    type: 'scatter',
+                    coordinateSystem: 'geo',
+                    data: scatterData,
+                    symbolSize: function(val) {
+                        return Math.sqrt(val[2]) * 2;
+                    },
+                    itemStyle: {
+                        color: '#0066FF',
+                        shadowBlur: 10,
+                        shadowColor: 'rgba(0, 102, 255, 0.5)'
+                    }
+                }]
+            };
+
+            // Since we don't have the actual China map JSON, let's create a bar chart alternative
+            const barOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: { type: 'shadow' }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                xAxis: {
+                    type: 'value',
+                    axisLabel: { formatter: '{value}座' }
+                },
+                yAxis: {
+                    type: 'category',
+                    data: provinceData.map(p => p.name).reverse(),
+                    axisLabel: { fontSize: 12 }
+                },
+                visualMap: {
+                    orient: 'horizontal',
+                    left: 'center',
+                    top: 0,
+                    min: 0,
+                    max: 450,
+                    text: ['高密度', '低密度'],
+                    dimension: 0,
+                    inRange: {
+                        color: ['#93c5fd', '#3b82f6', '#0066FF']
+                    }
+                },
+                series: [{
+                    name: '换电站数量',
+                    type: 'bar',
+                    data: provinceData.map(p => p.value).reverse(),
+                    label: {
+                        show: true,
+                        position: 'right',
+                        formatter: '{c}座'
+                    },
+                    itemStyle: {
+                        borderRadius: [0, 4, 4, 0]
+                    }
+                }]
+            };
+
+            myChart.setOption(barOption);
+            window.addEventListener('resize', () => myChart.resize());
+        }
+
+        // Initialize Province Table
+        function initProvinceTable() {
+            const tbody = document.getElementById('provinceTable');
+            const total = provinceData.reduce((sum, p) => sum + p.value, 0);
+            
+            provinceData.forEach((province, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-gray-100 hover:bg-gray-50 transition';
+                
+                const rankColor = index < 3 ? 'text-yellow-500' : 'text-gray-500';
+                const rankIcon = index < 3 ? '<i class="fas fa-crown mr-1"></i>' : '';
+                const trendIcon = province.trend === 'up' 
+                    ? '<i class="fas fa-arrow-up text-green-500"></i>' 
+                    : '<i class="fas fa-minus text-gray-400"></i>';
+                
+                tr.innerHTML = `
+                    <td class="py-3 px-4">
+                        <span class="${rankColor} font-bold">${rankIcon}${index + 1}</span>
+                    </td>
+                    <td class="py-3 px-4 font-medium text-gray-800">${province.name}</td>
+                    <td class="py-3 px-4 text-right font-semibold nio-blue">${province.value}</td>
+                    <td class="py-3 px-4 text-right text-gray-600">${(province.value / total * 100).toFixed(1)}%</td>
+                    <td class="py-3 px-4 text-center">${trendIcon}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Initialize Milestone Timeline
+        function initMilestoneTimeline() {
+            const container = document.getElementById('milestoneTimeline');
+            milestones.forEach((milestone, index) => {
+                const div = document.createElement('div');
+                div.className = 'relative pl-12';
+                div.innerHTML = `
+                    <div class="absolute left-2 top-1 w-4 h-4 bg-blue-500 rounded-full border-4 border-white shadow"></div>
+                    <div class="bg-gray-50 rounded-lg p-4 hover:bg-blue-50 transition cursor-pointer">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-sm font-bold nio-blue">${milestone.date}</span>
+                            ${index === 0 ? '<span class="px-2 py-0.5 bg-red-100 text-red-600 text-xs rounded-full">最新</span>' : ''}
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-1">${milestone.title}</h4>
+                        <p class="text-sm text-gray-600">${milestone.desc}</p>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Animate numbers
+        function animateNumbers() {
+            const elements = document.querySelectorAll('[id^="total"]');
+            elements.forEach(el => {
+                const finalValue = el.textContent;
+                el.textContent = '0';
+                let current = 0;
+                const target = parseInt(finalValue.replace(/[^\d]/g, ''));
+                const increment = target / 50;
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        el.textContent = finalValue;
+                        clearInterval(timer);
+                    } else {
+                        el.textContent = Math.floor(current).toLocaleString();
+                    }
+                }, 30);
+            });
+        }
+
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('updateTime').textContent = now.toLocaleDateString('zh-CN');
+        }
+
+        // Initialize all
+        document.addEventListener('DOMContentLoaded', () => {
+            updateTime();
+            initDailyUpdates();
+            initTrendChart();
+            initMapChart();
+            initProvinceTable();
+            initMilestoneTimeline();
+            setTimeout(animateNumbers, 500);
+        });
+    </script>
+</body>
+</html>
