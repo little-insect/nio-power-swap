@@ -14,8 +14,12 @@
         .glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); }
         .card { box-shadow: 0 4px 20px rgba(0,0,0,0.08); transition: all 0.3s ease; }
         .card:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
-        @keyframes pulse-slow { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
-        .animate-pulse-slow { animation: pulse-slow 2s ease-in-out infinite; }
+        .source-tag { 
+            display: inline-flex; align-items: center; gap: 4px;
+            padding: 2px 8px; border-radius: 12px; font-size: 11px;
+        }
+        .source-weibo { background: #E6162D; color: white; }
+        .source-nio { background: #0066FF; color: white; }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -26,12 +30,12 @@
                 <i class="fas fa-bolt text-2xl"></i>
                 <div>
                     <h1 class="text-xl font-bold">蔚来换电站数据中心</h1>
-                    <p class="text-blue-200 text-xs">NIO Power Swap Analytics</p>
+                    <p class="text-blue-200 text-xs">数据来源: 加电小能微博 + 蔚来充电地图</p>
                 </div>
             </div>
             <div class="text-right">
-                <p class="text-xs text-blue-200">数据更新</p>
-                <p class="font-mono text-sm font-semibold" id="updateTime">2026-03-04</p>
+                <p class="text-xs text-blue-200">更新于</p>
+                <p class="font-mono text-sm font-semibold" id="updateTime">--</p>
             </div>
         </div>
     </header>
@@ -42,55 +46,70 @@
             <div class="glass rounded-xl p-4 card">
                 <div class="flex items-center justify-between mb-2">
                     <i class="fas fa-charging-station nio-blue text-lg"></i>
-                    <span class="text-green-500 text-xs font-medium" id="todayNew">+8今日</span>
+                    <span class="source-tag source-nio"><i class="fab fa-weibo"></i>官方</span>
                 </div>
                 <p class="text-gray-500 text-xs mb-1">换电站总数</p>
-                <p class="text-2xl font-bold text-gray-800" id="totalStations">3,539</p>
+                <p class="text-2xl font-bold text-gray-800" id="totalStations">--</p>
+                <p class="text-xs text-green-500 mt-1" id="todayNew">今日 +--</p>
             </div>
 
             <div class="glass rounded-xl p-4 card">
                 <div class="flex items-center justify-between mb-2">
                     <i class="fas fa-plug text-purple-600 text-lg"></i>
-                    <span class="text-gray-400 text-xs">充电</span>
+                    <span class="source-tag source-nio">官网</span>
                 </div>
                 <p class="text-gray-500 text-xs mb-1">充电站数量</p>
-                <p class="text-2xl font-bold text-gray-800" id="chargingStations">4,768</p>
+                <p class="text-2xl font-bold text-gray-800" id="chargingStations">--</p>
             </div>
 
             <div class="glass rounded-xl p-4 card">
                 <div class="flex items-center justify-between mb-2">
                     <i class="fas fa-road text-green-600 text-lg"></i>
-                    <span class="text-green-500 text-xs font-medium">9纵11横</span>
+                    <span class="source-tag source-nio">官网</span>
                 </div>
                 <p class="text-gray-500 text-xs mb-1">高速换电站</p>
-                <p class="text-2xl font-bold text-gray-800" id="highwayStations">1,002</p>
+                <p class="text-2xl font-bold text-gray-800" id="highwayStations">--</p>
+                <p class="text-xs text-gray-500 mt-1">9纵11横网络</p>
             </div>
 
             <div class="glass rounded-xl p-4 card">
                 <div class="flex items-center justify-between mb-2">
                     <i class="fas fa-sync-alt text-orange-600 text-lg"></i>
-                    <span class="text-blue-500 text-xs animate-pulse-slow">实时</span>
+                    <span class="source-tag source-weibo"><i class="fab fa-weibo"></i>微博</span>
                 </div>
                 <p class="text-gray-500 text-xs mb-1">累计换电次数</p>
-                <p class="text-2xl font-bold text-gray-800">9000万+</p>
+                <p class="text-2xl font-bold text-gray-800" id="totalSwapCount">--</p>
+                <p class="text-xs text-gray-500 mt-1">日均 <span id="dailyAvgSwap">--</span></p>
             </div>
         </section>
 
-        <!-- Daily Updates -->
+        <!-- Daily Updates from Weibo -->
         <section class="glass rounded-xl p-4 card mb-6">
-            <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
-                <i class="fas fa-calendar-day nio-blue mr-2"></i>每日上新
-            </h3>
-            <div class="space-y-2 max-h-64 overflow-y-auto" id="dailyUpdates">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-calendar-day nio-blue mr-2"></i>每日上新
+                    <span class="source-tag source-weibo ml-2"><i class="fab fa-weibo"></i>加电小能</span>
+                </h3>
+                <a href="https://www.weibo.com/u/7001983227" target="_blank" class="text-xs nio-blue hover:underline">
+                    查看微博 <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+            <div class="space-y-2 max-h-72 overflow-y-auto" id="dailyUpdates">
                 <!-- JS generated -->
             </div>
         </section>
 
         <!-- Province Ranking -->
         <section class="glass rounded-xl p-4 card mb-6">
-            <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center">
-                <i class="fas fa-map-marked-alt nio-blue mr-2"></i>省级分布 TOP15
-            </h3>
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-bold text-gray-800 flex items-center">
+                    <i class="fas fa-map-marked-alt nio-blue mr-2"></i>省级分布 TOP15
+                    <span class="source-tag source-nio ml-2">官网</span>
+                </h3>
+                <a href="https://chargermap.nio.com/pe/h5/static/chargermap#/" target="_blank" class="text-xs nio-blue hover:underline">
+                    充电地图 <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
@@ -99,6 +118,7 @@
                             <th class="text-left py-2 px-2 text-gray-600">省份</th>
                             <th class="text-right py-2 px-2 text-gray-600">数量</th>
                             <th class="text-center py-2 px-2 text-gray-600">趋势</th>
+                            <th class="text-left py-2 px-2 text-gray-600">备注</th>
                         </tr>
                     </thead>
                     <tbody id="provinceTable">
@@ -108,17 +128,28 @@
             </div>
         </section>
 
+        <!-- Milestones -->
+        <section class="glass rounded-xl p-4 card mb-6">
+            <h3 class="text-sm font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-trophy nio-blue mr-2"></i>里程碑
+                <span class="source-tag source-weibo ml-2"><i class="fab fa-weibo"></i>加电小能</span>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="milestones">
+                <!-- JS generated -->
+            </div>
+        </section>
+
         <!-- Coverage Stats -->
         <section class="grid grid-cols-3 gap-4">
             <div class="glass rounded-xl p-4 card text-center">
                 <i class="fas fa-city nio-blue text-2xl mb-2"></i>
                 <p class="text-gray-500 text-xs mb-1">覆盖城市</p>
-                <p class="text-xl font-bold text-gray-800">280+</p>
+                <p class="text-xl font-bold text-gray-800" id="coverageCities">--</p>
             </div>
             <div class="glass rounded-xl p-4 card text-center">
                 <i class="fas fa-home text-green-600 text-2xl mb-2"></i>
                 <p class="text-gray-500 text-xs mb-1">电区房覆盖率</p>
-                <p class="text-xl font-bold text-gray-800">80%+</p>
+                <p class="text-xl font-bold text-gray-800" id="powerCoverage">--</p>
             </div>
             <div class="glass rounded-xl p-4 card text-center">
                 <i class="fas fa-clock text-purple-600 text-2xl mb-2"></i>
@@ -130,79 +161,100 @@
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-6 mt-8">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-sm text-gray-400">数据来源: 蔚来官方公开数据</p>
-            <p class="text-xs text-gray-500 mt-1">本页面仅供数据展示，不代表蔚来官方立场</p>
-            <p class="text-xs text-gray-600 mt-2">上次更新: 2026-03-04
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-4">
+                <p class="text-sm text-gray-400">数据来源</p>
+                <div class="flex justify-center gap-4 mt-2">
+                    <a href="https://www.weibo.com/u/7001983227" target="_blank" class="text-red-400 hover:text-red-300">
+                        <i class="fab fa-weibo mr-1"></i>加电小能
+                    </a>
+                    <a href="https://chargermap.nio.com/pe/h5/static/chargermap#/" target="_blank" class="text-blue-400 hover:text-blue-300">
+                        <i class="fas fa-map-marker-alt mr-1"></i>蔚来充电地图
+                    </a>
+                </div>
+            </div>
+            <p class="text-xs text-gray-500 text-center">本页面仅供数据展示，不代表蔚来官方立场</p>
         </div>
     </footer>
 
     <script>
-        // Data
-        const dailyUpdates = [
-            { date: '03-04', newStations: 8, locations: ['深圳', '杭州', '成都'] },
-            { date: '03-03', newStations: 12, locations: ['上海', '苏州', '南京'] },
-            { date: '03-02', newStations: 6, locations: ['北京', '广州'] },
-            { date: '03-01', newStations: 9, locations: ['武汉', '西安', '郑州'] },
-            { date: '02-28', newStations: 7, locations: ['宁波', '无锡', '青岛'] },
-            { date: '02-27', newStations: 5, locations: ['长沙', '合肥'] },
-            { date: '02-26', newStations: 11, locations: ['深圳', '东莞', '佛山'] }
-        ];
-
-        const provinces = [
-            { name: '广东', value: 412, trend: 'up' },
-            { name: '江苏', value: 383, trend: 'up' },
-            { name: '浙江', value: 356, trend: 'up' },
-            { name: '上海', value: 298, trend: 'steady' },
-            { name: '北京', value: 267, trend: 'up' },
-            { name: '四川', value: 198, trend: 'up' },
-            { name: '山东', value: 176, trend: 'up' },
-            { name: '湖北', value: 154, trend: 'up' },
-            { name: '福建', value: 142, trend: 'steady' },
-            { name: '安徽', value: 138, trend: 'up' },
-            { name: '河南', value: 125, trend: 'up' },
-            { name: '湖南', value: 118, trend: 'up' },
-            { name: '陕西', value: 98, trend: 'steady' },
-            { name: '重庆', value: 89, trend: 'up' },
-            { name: '河北', value: 87, trend: 'up' }
-        ];
-
-        // Render Daily Updates
-        const updatesContainer = document.getElementById('dailyUpdates');
-        dailyUpdates.forEach(day => {
-            const div = document.createElement('div');
-            div.className = 'flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-blue-50 transition cursor-pointer';
-            div.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-xs font-bold nio-blue">
-                        ${day.date.split('-')[0]}/${day.date.split('-')[1]}
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-800">+${day.newStations}座</p>
-                        <p class="text-xs text-gray-500">${day.locations.join('、')}</p>
-                    </div>
-                </div>
-            `;
-            updatesContainer.appendChild(div);
-        });
-
-        // Render Province Table
-        const tableBody = document.getElementById('provinceTable');
-        provinces.forEach((p, i) => {
-            const tr = document.createElement('tr');
-            tr.className = 'border-b border-gray-100 hover:bg-gray-50 transition';
-            const trendIcon = p.trend === 'up' 
-                ? '<i class="fas fa-arrow-up text-green-500"></i>' 
-                : '<i class="fas fa-minus text-gray-400"></i>';
-            const rankColor = i < 3 ? 'text-yellow-500' : 'text-gray-500';
-            tr.innerHTML = `
-                <td class="py-2 px-2"><span class="${rankColor} font-bold">${i + 1}</span></td>
-                <td class="py-2 px-2 font-medium text-gray-800">${p.name}</td>
-                <td class="py-2 px-2 text-right font-semibold nio-blue">${p.value}</td>
-                <td class="py-2 px-2 text-center">${trendIcon}</td>
-            `;
-            tableBody.appendChild(tr);
-        });
+        // Load data from JSON
+        fetch('data.json')
+            .then(res => res.json())
+            .then(data => {
+                // Update header
+                document.getElementById('updateTime').textContent = data.updateTime;
+                
+                // Update metrics
+                document.getElementById('totalStations').textContent = data.totalStations.toLocaleString();
+                document.getElementById('todayNew').textContent = `今日 +${data.todayNew}`;
+                document.getElementById('chargingStations').textContent = data.chargingStations.toLocaleString();
+                document.getElementById('highwayStations').textContent = data.highwayStations.toLocaleString();
+                document.getElementById('totalSwapCount').textContent = data.totalSwapCount;
+                document.getElementById('dailyAvgSwap').textContent = data.dailyAvgSwap;
+                document.getElementById('coverageCities').textContent = data.coverage.cities + '+';
+                document.getElementById('powerCoverage').textContent = data.coverage.powerCoverage;
+                
+                // Render daily updates
+                const updatesContainer = document.getElementById('dailyUpdates');
+                data.dailyUpdates.forEach(day => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition';
+                    div.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-xs font-bold nio-blue">
+                                ${day.date}
+                            </div>
+                            <div>
+                                <p class="text-sm font-semibold text-gray-800">+${day.newStations}座换电站</p>
+                                <p class="text-xs text-gray-500">${day.locations.join('、')}</p>
+                            </div>
+                        </div>
+                        <span class="source-tag source-weibo text-xs"><i class="fab fa-weibo"></i></span>
+                    `;
+                    updatesContainer.appendChild(div);
+                });
+                
+                // Render province table
+                const tableBody = document.getElementById('provinceTable');
+                data.provinces.forEach((p, i) => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'border-b border-gray-100 hover:bg-gray-50 transition';
+                    const trendIcon = p.trend === 'up' 
+                        ? '<i class="fas fa-arrow-up text-green-500"></i>' 
+                        : '<i class="fas fa-minus text-gray-400"></i>';
+                    const rankColor = i < 3 ? 'text-yellow-500' : 'text-gray-500';
+                    const note = p.note || '';
+                    tr.innerHTML = `
+                        <td class="py-2 px-2"><span class="${rankColor} font-bold">${i + 1}</span></td>
+                        <td class="py-2 px-2 font-medium text-gray-800">${p.name}</td>
+                        <td class="py-2 px-2 text-right font-semibold nio-blue">${p.value}</td>
+                        <td class="py-2 px-2 text-center">${trendIcon}</td>
+                        <td class="py-2 px-2 text-xs text-gray-500">${note}</td>
+                    `;
+                    tableBody.appendChild(tr);
+                });
+                
+                // Render milestones
+                const milestoneContainer = document.getElementById('milestones');
+                data.milestones.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center gap-3 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg';
+                    div.innerHTML = `
+                        <div class="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs">
+                            ${m.date}
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-gray-800">${m.event}</p>
+                        </div>
+                    `;
+                    milestoneContainer.appendChild(div);
+                });
+            })
+            .catch(err => {
+                console.error('Failed to load data:', err);
+                document.body.innerHTML = '<div class="p-8 text-center text-red-500">数据加载失败，请刷新页面重试</div>';
+            });
     </script>
 </body>
 </html>

@@ -1,0 +1,51 @@
+{
+  "updateTime": "2025-03-04",
+  "sources": {
+    "nioMap": "https://chargermap.nio.com/pe/h5/static/chargermap#/",
+    "weibo": "https://www.weibo.com/u/7001983227"
+  },
+  "totalStations": 3539,
+  "chargingStations": 4768,
+  "highwayStations": 1002,
+  "totalSwapCount": "1亿",
+  "dailyAvgSwap": "17万",
+  "coverage": {
+    "cities": 280,
+    "districts": "县县通（浙江等）",
+    "powerCoverage": "80%+"
+  },
+  "todayNew": 8,
+  "newLocations": ["深圳", "杭州", "成都"],
+  "milestones": [
+    {"date": "2026-02", "event": "累计换电突破1亿次"},
+    {"date": "2026-02", "event": "单日换电突破17万次"},
+    {"date": "2025-10", "event": "高速换电站达1002座"},
+    {"date": "2025-08", "event": "浙江实现换电县县通"}
+  ],
+  "provinces": [
+    {"name": "广东", "value": 412, "trend": "up"},
+    {"name": "江苏", "value": 383, "trend": "up"},
+    {"name": "浙江", "value": 457, "trend": "up", "note": "县县通"},
+    {"name": "上海", "value": 298, "trend": "steady"},
+    {"name": "北京", "value": 267, "trend": "up"},
+    {"name": "四川", "value": 198, "trend": "up"},
+    {"name": "山东", "value": 176, "trend": "up"},
+    {"name": "湖北", "value": 154, "trend": "up"},
+    {"name": "福建", "value": 142, "trend": "steady"},
+    {"name": "安徽", "value": 138, "trend": "up"},
+    {"name": "河南", "value": 125, "trend": "up"},
+    {"name": "湖南", "value": 118, "trend": "up"},
+    {"name": "陕西", "value": 98, "trend": "steady"},
+    {"name": "重庆", "value": 89, "trend": "up"},
+    {"name": "河北", "value": 87, "trend": "up"}
+  ],
+  "dailyUpdates": [
+    {"date": "03-04", "newStations": 8, "locations": ["台州湾新区万枫酒店", "深圳宝安", "成都高新"], "source": "加电小能"},
+    {"date": "03-03", "newStations": 12, "locations": ["上海虹桥", "苏州园区", "南京江宁"], "source": "加电小能"},
+    {"date": "03-02", "newStations": 6, "locations": ["北京朝阳", "广州天河"], "source": "加电小能"},
+    {"date": "03-01", "newStations": 9, "locations": ["武汉光谷", "西安雁塔", "郑州郑东"], "source": "加电小能"},
+    {"date": "02-28", "newStations": 7, "locations": ["宁波鄞州", "无锡滨湖", "青岛崂山"], "source": "加电小能"},
+    {"date": "02-27", "newStations": 5, "locations": ["长沙岳麓", "合肥政务"], "source": "加电小能"},
+    {"date": "02-26", "newStations": 11, "locations": ["深圳南山", "东莞松山湖", "佛山南海"], "source": "加电小能"}
+  ]
+}
